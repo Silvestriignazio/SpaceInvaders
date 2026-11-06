@@ -1,7 +1,35 @@
-.area_gioco{
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.area-gioco {
     position: relative;
-    height: 800px;
     width: 500px;
-    background-color: beige;
-    
+    height: 300px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-image: url("img/sfondo.png");
+    background-size: cover;
+    background-position: center;
+    background-color: black;
+}
+
+.nascosto{
+    display: none;
+}
+
+.navicella {
+    position: absolute;
+    bottom: 10px;
+    width: 40px;
+    height: 40px;
+    background-image: url("img/navicella.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
