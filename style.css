@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    min-height: 100vh;
+     min-height: 100vh; /*significa che l'altezza minima di un elemento deve essere pari al 100% dell'altezza dello schermo (viewport) dell'utente.*/
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,8 +9,8 @@ body {
 
 .area-gioco {
     position: relative;
-    width: 500px;
-    height: 300px;
+    width: 1400px;
+    height: 700px;
     overflow: hidden;
     box-sizing: border-box;
     background-image: url("img/sfondo.png");
@@ -26,10 +26,22 @@ body {
 .navicella {
     position: absolute;
     bottom: 10px;
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     background-image: url("img/navicella.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
+
+.proiettile {
+    position: absolute;
+    width: 10px;
+    height: 25px;
+    background-image: url("img/proiettile.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
