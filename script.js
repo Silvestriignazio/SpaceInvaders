@@ -471,9 +471,9 @@ function controllaCollisioni() {
 
             colpito = true;
 
-            // Se finiscono le vite il gioco ricomincia
+            // Se finiscono le vite termina la partita
             if (vite <= 0) {
-                ricominciaPartita();
+                finePartita(false);
                 return;
             }
         }
@@ -505,15 +505,20 @@ function danneggiaMuretto(indice) {
 }
 
 
-// PARTITA INFINITA
+// PARTITA CON ONDATE INFINITE
 
 function controllaFinePartita() {
 
-    // Quando elimini tutti gli alieni arriva una nuova ondata
+    if (partitaFinita) {
+        return;
+    }
+
+    // Quando tutti gli alieni vengono eliminati
+    // arriva una nuova ondata
     if (alieni.length === 0) {
         ondata++;
 
-        // Aumenta la velocità degli alieni
+        // Gli alieni diventano più veloci
         if (intervalloMovimento > 50) {
             intervalloMovimento -= 10;
         }
@@ -526,61 +531,10 @@ function controllaFinePartita() {
         if (alieni[i].y + ALTEZZA_ALIENO >=
             ALTEZZA - ALTEZZA_NAVICELLA - 10) {
 
-            ricominciaPartita();
+            finePartita(false);
             return;
         }
     }
-}
-
-
-// RICOMINCIA AUTOMATICAMENTE
-
-function ricominciaPartita() {
-
-    // Aggiorna la classifica della sessione
-    classifica.push({
-        nome: nome,
-        punteggio: punteggio
-    });
-
-    mostraClassifica();
-
-    area.innerHTML = "";
-
-    proiettili = [];
-    proiettiliAlieni = [];
-    alieni = [];
-    muretti = [];
-
-    punteggio = 0;
-    vite = 3;
-    ondata = 1;
-    direzioneAlieni = 1;
-    ultimoMovimentoAlieni = 0;
-    ultimoSparoAlieni = Date.now();
-
-    // Ripristina la difficoltà scelta
-    if (difficolta === "facile") {
-        intervalloMovimento = 250;
-        intervalloSparo = 2000;
-    }
-
-    if (difficolta === "difficile") {
-        intervalloMovimento = 150;
-        intervalloSparo = 1200;
-    }
-
-    if (difficolta === "superdifficile") {
-        intervalloMovimento = 80;
-        intervalloSparo = 700;
-    }
-
-    document.querySelector("#punteggio").textContent = "Punteggio: 0";
-    document.querySelector("#vite").textContent = "Vite: 3";
-
-    creaNavicella();
-    creaAlieni();
-    creaMuretti();
 }
 
 
