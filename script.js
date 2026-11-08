@@ -12,6 +12,14 @@ const ALTEZZA_NAVICELLA = 80;
 const LARGHEZZA_PROIETTILE = 10;
 const ALTEZZA_PROIETTILE = 25;
 const VELOCITA_PROIETTILE = 8;
+const RIGHE_ALIENI = 5;
+const COLONNE_ALIENI = 11;
+const LARGHEZZA_ALIENO = 50;
+const ALTEZZA_ALIENO = 50;
+const SPAZIO_ALIENI = 15;
+const PASSO_ALIENI = 5;
+const INTERVALLO_ALIENI = 250;
+const SCESA_ALIENI = 20;
 
 let LARGHEZZA = 0;
 let ALTEZZA = 0;
@@ -22,6 +30,9 @@ let navicellaX = 0;
 let tastoSinistra = false;
 let tastoDestra = false;
 let proiettili = [];
+let alieni = [];
+let direzioneAlieni = 1; //1 destra -1 sinistra
+let ultimoMovimentoAlieni = 0;
 
 function cambiaNome() {
     nome = inserisciNome.value;
@@ -44,6 +55,7 @@ function startGame() {
     ALTEZZA = area.clientHeight;
 
     creaNavicella();
+    creaAlieni();
     gameLoop();
 }
 
@@ -102,8 +114,6 @@ function rilasciaTasto(evento) {
     }
 }
 
-
-
 function sparaGiocatore() {
     const elemento = document.createElement("div");
     elemento.classList.add("proiettile");
@@ -140,13 +150,73 @@ function aggiornaProiettili() {
     }
 }
 
+function creaAlieni() {
+    const larghezzaGriglia = COLONNE_ALIENI * LARGHEZZA_ALIENO + (COLONNE_ALIENI - 1) * SPAZIO_ALIENI;
+    const inizioX = (LARGHEZZA - larghezzaGriglia) / 2;
+
+    for (let riga = 0; riga < RIGHE_ALIENI; riga++) {
+        for (let colonna = 0; colonna < COLONNE_ALIENI; colonna++) {
+            const elemento = document.createElement("div");
+            elemento.classList.add("alieno");
+
+            const alieno = { //ogni singolo alieno è un oggetto che è contenuto in un array
+                x: inizioX + colonna * (LARGHEZZA_ALIENO + SPAZIO_ALIENI),
+                y: 40 + riga * (ALTEZZA_ALIENO + SPAZIO_ALIENI),
+                elemento: elemento
+            };
+
+            alieni.push(alieno);
+            area.appendChild(elemento);
+            disegnaAlieno(alieno);
+        }
+    }
+}
+
+function disegnaAlieno(alieno) {
+    alieno.elemento.style.left = alieno.x + "px";
+    alieno.elemento.style.top = alieno.y + "px";
+}
+
+function muoviAlieni() {
+    const adesso = Date.now();
+    if (adesso - ultimoMovimentoAlieni < INTERVALLO_ALIENI) {
+        return;
+    }
+    ultimoMovimentoAlieni = adesso;
+
+    let toccatoBordo = false;
+
+    for (let i = 0; i < alieni.length; i++) {
+        const alieno = alieni[i];
+        alieno.x += PASSO_ALIENI * direzioneAlieni;
+
+        if (alieno.x <= 0 || alieno.x + LARGHEZZA_ALIENO >= LARGHEZZA) {
+            toccatoBordo = true;
+        }
+    }
+
+    if (toccatoBordo) {
+        direzioneAlieni = direzioneAlieni * -1;
+
+        for (let i = 0; i < alieni.length; i++) {
+            alieni[i].y += SCESA_ALIENI;
+        }
+    }
+
+    for (let i = 0; i < alieni.length; i++) {
+        disegnaAlieno(alieni[i]);
+    }
+}
+
 function gameLoop() {
     aggiornaNavicella();
     aggiornaProiettili();
+    muoviAlieni();
     requestAnimationFrame(gameLoop);
     //se si muove la navicella solo con keydown essa va a scatti, poichè il dom deve attendere un'attimo, quindi abbiamo deciso di utilizzare dei flag che accendono e 
     //spengono il movimento e grazie a un game loop con requestAnimationFrame, a ogni frame (60fps), controlla le variabili e le ridisegna, così il tutto esce più fluido
 }
+
 selectDifficolta.addEventListener("change", cambiaDifficolta);
 inserisciNome.addEventListener("input", cambiaNome);
 btnstart.addEventListener("click", startGame);
