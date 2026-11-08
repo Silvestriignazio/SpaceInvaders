@@ -50,6 +50,10 @@ let intervalloSparo = 2000;
 let intervalloMovimento = INTERVALLO_ALIENI;
 let classifica = [];
 
+// Numero dell'ondata
+let ondata = 1;
+
+
 // EVENTI DEL MENU
 
 function cambiaNome() {
@@ -86,6 +90,8 @@ function startGame() {
     ultimoMovimentoAlieni = 0;
     ultimoSparoAlieni = Date.now();
 
+    ondata = 1;
+
     tastoSinistra = false;
     tastoDestra = false;
 
@@ -115,6 +121,7 @@ function startGame() {
     creaMuretti();
     gameLoop();
 }
+
 
 // NAVICELLA
 
@@ -184,6 +191,7 @@ function rilasciaTasto(evento) {
     }
 }
 
+
 // PROIETTILI DEL GIOCATORE
 
 function sparaGiocatore() {
@@ -220,6 +228,7 @@ function aggiornaProiettili() {
         }
     }
 }
+
 
 // ALIENI
 
@@ -288,6 +297,7 @@ function muoviAlieni() {
     }
 }
 
+
 // SPARI DEGLI ALIENI
 
 function sparaAlieni() {
@@ -336,6 +346,7 @@ function aggiornaProiettiliAlieni() {
     }
 }
 
+
 // MURETTI PROTETTIVI
 
 function creaMuretti() {
@@ -357,6 +368,7 @@ function creaMuretti() {
         elemento.style.top = muretto.y + "px";
     }
 }
+
 
 // CONTROLLO COLLISIONI
 
@@ -459,8 +471,10 @@ function controllaCollisioni() {
 
             colpito = true;
 
+            // Se finiscono le vite il gioco ricomincia
             if (vite <= 0) {
-                finePartita(false);
+                ricominciaPartita();
+                return;
             }
         }
 
@@ -490,28 +504,87 @@ function danneggiaMuretto(indice) {
     }
 }
 
-// FINE PARTITA
+
+// PARTITA INFINITA
 
 function controllaFinePartita() {
 
-    if (partitaFinita) {
-        return;
-    }
-
+    // Quando elimini tutti gli alieni arriva una nuova ondata
     if (alieni.length === 0) {
-        finePartita(true);
-        return;
+        ondata++;
+
+        // Aumenta la velocità degli alieni
+        if (intervalloMovimento > 50) {
+            intervalloMovimento -= 10;
+        }
+
+        creaAlieni();
     }
 
+    // Se gli alieni raggiungono la navicella
     for (let i = 0; i < alieni.length; i++) {
         if (alieni[i].y + ALTEZZA_ALIENO >=
             ALTEZZA - ALTEZZA_NAVICELLA - 10) {
 
-            finePartita(false);
+            ricominciaPartita();
             return;
         }
     }
 }
+
+
+// RICOMINCIA AUTOMATICAMENTE
+
+function ricominciaPartita() {
+
+    // Aggiorna la classifica della sessione
+    classifica.push({
+        nome: nome,
+        punteggio: punteggio
+    });
+
+    mostraClassifica();
+
+    area.innerHTML = "";
+
+    proiettili = [];
+    proiettiliAlieni = [];
+    alieni = [];
+    muretti = [];
+
+    punteggio = 0;
+    vite = 3;
+    ondata = 1;
+    direzioneAlieni = 1;
+    ultimoMovimentoAlieni = 0;
+    ultimoSparoAlieni = Date.now();
+
+    // Ripristina la difficoltà scelta
+    if (difficolta === "facile") {
+        intervalloMovimento = 250;
+        intervalloSparo = 2000;
+    }
+
+    if (difficolta === "difficile") {
+        intervalloMovimento = 150;
+        intervalloSparo = 1200;
+    }
+
+    if (difficolta === "superdifficile") {
+        intervalloMovimento = 80;
+        intervalloSparo = 700;
+    }
+
+    document.querySelector("#punteggio").textContent = "Punteggio: 0";
+    document.querySelector("#vite").textContent = "Vite: 3";
+
+    creaNavicella();
+    creaAlieni();
+    creaMuretti();
+}
+
+
+// FINE PARTITA
 
 function finePartita(vittoria) {
     if (partitaFinita) {
@@ -544,6 +617,7 @@ function rigioca() {
     menu.classList.remove("nascosto");
     navicella = null;
 }
+
 
 // CLASSIFICA JSON
 
@@ -592,6 +666,7 @@ function mostraClassifica() {
     }
 }
 
+
 // GAME LOOP
 
 function gameLoop() {
@@ -613,6 +688,7 @@ function gameLoop() {
         requestAnimationFrame(gameLoop);
     }
 }
+
 
 // EVENT LISTENER
 
