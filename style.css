@@ -1,11 +1,44 @@
+
 body {
     margin: 0;
-     min-height: 100vh; /*significa che l'altezza minima di un elemento deve essere pari al 100% dell'altezza dello schermo (viewport) dell'utente.*/
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-color: #101020;
+    color: white;
+    font-family: Arial;
 }
+
+h1 {
+    color: white;
+}
+
+/* menu iniziale */
+
+#menu {
+    padding: 20px;
+    background-color: #222;
+    text-align: center;
+}
+
+label {
+    margin: 10px;
+}
+
+input, select {
+    padding: 5px;
+    margin: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+/* area di gioco */
 
 .area-gioco {
     position: relative;
@@ -19,9 +52,11 @@ body {
     background-color: black;
 }
 
-.nascosto{
+.nascosto {
     display: none;
 }
+
+/* navicella */
 
 .navicella {
     position: absolute;
@@ -34,6 +69,8 @@ body {
     background-position: center;
 }
 
+/* proiettile giocatore */
+
 .proiettile {
     position: absolute;
     width: 10px;
@@ -43,6 +80,8 @@ body {
     background-repeat: no-repeat;
     background-position: center;
 }
+
+/* alieni */
 
 .alieno {
     position: absolute;
@@ -54,4 +93,54 @@ body {
     background-position: center;
 }
 
+/* proiettili degli alieni */
 
+.proiettile-alieno {
+    position: absolute;
+    width: 10px;
+    height: 25px;
+    background-color: red;
+}
+
+/* muretti */
+
+.muretto {
+    position: absolute;
+    width: 100px;
+    height: 35px;
+    background-color: green;
+}
+
+/* punteggio e vite */
+
+#pannello {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+/* fine partita */
+
+#messaggio {
+    font-size: 25px;
+    text-align: center;
+    color: red;
+}
+
+/* classifica */
+
+#classifica {
+    margin: 20px;
+    padding: 15px;
+    background-color: #222;
+    text-align: center;
+    min-width: 250px;
+}
+
+#listaClassifica {
+    text-align: left;
+}
+
+#listaClassifica li {
+    margin: 5px;
+}

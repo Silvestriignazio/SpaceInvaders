@@ -1,0 +1,19 @@
+
+[
+    {
+        "nome": "Marco",
+        "punteggio": 450
+    },
+    {
+        "nome": "Luca",
+        "punteggio": 300
+    },
+    {
+        "nome": "Andrea",
+        "punteggio": 200
+    },
+    {
+        "nome": "Giovanni",
+        "punteggio": 100
+    }
+]

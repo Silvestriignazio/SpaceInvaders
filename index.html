@@ -1,43 +1,49 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <title>Space Invaders</title>
     <link rel="stylesheet" href="style.css">
-    
 </head>
 <body>
 
     <h1>Space Invaders</h1>
 
     <section id="menu">
-        <!--il for ci permette di selezionare il label e farci accedere al -->
-        <label for="inputnome">inserisci il nome</label> 
+        <!-- Il for collega la label all'input -->
+        <label for="inputnome">Inserisci il nome</label>
         <input type="text" name="nome" id="inputnome" placeholder="insursore speciale"><br>
-        <label for="difficoltà">difficoltà</label>
+
+        <label for="difficoltà">Difficoltà</label>
         <select name="difficoltà" id="difficoltà">
             <option value="facile">facile</option>
             <option value="difficile">difficile</option>
             <option value="superdifficile">superdifficile</option>
         </select><br>
+
         <button id="start">Start</button><br>
     </section>
 
     <!-- PARTITA: nascosta finché non premi Start -->
     <section id="partita" class="nascosto">
-        <!-- pannello con punteggio e vite -->
+
         <div id="pannello">
             <span id="punteggio">Punteggio: 0</span>
             <span id="vite">Vite: 3</span>
         </div>
+
         <div class="area-gioco"></div>
+
+        <p id="messaggio"></p>
+        <button id="rigioca" class="nascosto">Rigioca</button>
     </section>
 
     <!-- CLASSIFICA: caricata con fetch async -->
     <section id="classifica">
         <h2>Classifica</h2>
-        <!-- paragrafo per i messaggi di stato -->
-        <!-- lista (ul) dove JS inserirà i punteggi -->
+        <p id="statoClassifica"></p>
+        <ul id="listaClassifica"></ul>
     </section>
 
     <script src="script.js"></script>
