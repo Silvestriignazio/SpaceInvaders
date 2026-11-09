@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -25,25 +24,25 @@
         <button id="start">Start</button><br>
     </section>
 
-    <!-- PARTITA: nascosta finché non premi Start -->
+
     <section id="partita" class="nascosto">
 
         <div id="pannello">
             <span id="punteggio">Punteggio: 0</span>
-            <span id="vite">Vite: 3</span>
+            <span id="vite"></span>
         </div>
 
         <div class="area-gioco"></div>
 
         <p id="messaggio"></p>
-        <button id="rigioca" class="nascosto">Rigioca</button>
     </section>
 
-    <!-- CLASSIFICA: caricata con fetch async -->
+    
     <section id="classifica">
         <h2>Classifica</h2>
         <p id="statoClassifica"></p>
         <ul id="listaClassifica"></ul>
+        <button id="rigioca" class="nascosto">Rigioca</button>
     </section>
 
     <script src="script.js"></script>

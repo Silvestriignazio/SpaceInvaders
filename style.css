@@ -1,75 +1,160 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
 
 body {
     margin: 0;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    padding: 20px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-    background-color: #101020;
+    align-items: center;
+    align-content: center;
+    gap: 20px;
+    background-color: #0a0a1f;
     color: white;
-    font-family: Arial;
+    font-family: "Courier New", monospace;
+}
+
+body:has(#menu:not(.nascosto)) {
+    background-image: url("img/sfondohome.gif");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 h1 {
-    color: white;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    color: #39ff14;
+    text-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14;
 }
-
-/* menu iniziale */
 
 #menu {
-    padding: 20px;
-    background-color: #222;
+    width: min(700px, 100%);
+    padding: 60px 40px;
     text-align: center;
+    font-size: 22px;
+    background-color: rgba(10, 10, 30, 0.92);
+    border: 3px solid #39ff14;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(57, 255, 20, 0.6);
 }
 
-label {
-    margin: 10px;
+#menu br {
+    display: none;
 }
 
-input, select {
-    padding: 5px;
-    margin: 10px;
+#menu label {
+    display: block;
+    margin-top: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+input,
+select {
+    display: block;
+    width: 70%;
+    margin: 12px auto;
+    padding: 14px;
+    font-family: inherit;
+    font-size: 20px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 2px solid #39ff14;
+    border-radius: 6px;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    box-shadow: 0 0 12px #39ff14;
+}
+
+select option {
+    background-color: #111;
 }
 
 button {
-    padding: 10px 20px;
-    margin: 10px;
+    padding: 16px 50px;
+    margin: 25px 10px 10px;
+    font-family: inherit;
+    font-size: 22px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #0a0a1f;
+    background-color: #39ff14;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
+    transition: transform 0.15s;
 }
 
-/* area di gioco */
-
-.area-gioco {
-    position: relative;
-    width: 1400px;
-    height: 700px;
-    overflow: hidden;
-    box-sizing: border-box;
-    background-image: url("img/sfondo.png");
-    background-size: cover;
-    background-position: center;
-    background-color: black;
+button:hover {
+    transform: scale(1.06);
 }
 
 .nascosto {
     display: none;
 }
 
-/* navicella */
+#partita {
+    flex: 1 1 700px;
+    max-width: 1100px;
+    min-width: 0;
+}
+
+#pannello {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #39ff14;
+    background-color: rgba(10, 10, 30, 0.85);
+    border: 2px solid #39ff14;
+    border-radius: 8px;
+}
+
+.area-gioco {
+    position: relative;
+    width: 100%;
+    height: clamp(500px, calc(100vh - 230px), 700px);
+    overflow: hidden;
+    border: 3px solid #39ff14;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    background-color: black;
+    background-image: url("img/sfondo.png");
+    background-size: cover;
+    background-position: center;
+}
 
 .navicella {
     position: absolute;
     bottom: 10px;
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     background-image: url("img/navicella.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
-
-/* proiettile giocatore */
 
 .proiettile {
     position: absolute;
@@ -81,8 +166,6 @@ button {
     background-position: center;
 }
 
-/* alieni */
-
 .alieno {
     position: absolute;
     width: 50px;
@@ -93,54 +176,120 @@ button {
     background-position: center;
 }
 
-/* proiettili degli alieni */
-
 .proiettile-alieno {
     position: absolute;
     width: 10px;
     height: 25px;
-    background-color: red;
+    background-image: url("img/sprite_x8.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-
-/* muretti */
 
 .muretto {
     position: absolute;
-    width: 100px;
-    height: 35px;
-    background-color: green;
+    width: 120px;
+    height: 40px;
+    background-image: url("img/muretto.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-
-/* punteggio e vite */
-
-#pannello {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-}
-
-/* fine partita */
 
 #messaggio {
-    font-size: 25px;
+    min-height: 30px;
+    margin: 15px 0 0;
+    font-size: 28px;
+    font-weight: bold;
     text-align: center;
-    color: red;
+    color: #ff3b3b;
+    text-shadow: 0 0 10px #ff3b3b;
 }
 
-/* classifica */
+#rigioca {
+    width: 100%;
+    margin: 15px 0 0;
+}
+
+#rigioca.nascosto {
+    display: none;
+}
 
 #classifica {
-    margin: 20px;
-    padding: 15px;
-    background-color: #222;
+    flex: 0 0 280px;
+    align-self: flex-start;
+    padding: 20px;
+    background-color: rgba(10, 10, 30, 0.9);
+    border: 3px solid #39ff14;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+}
+
+#classifica h2 {
+    margin: 0 0 10px;
     text-align: center;
-    min-width: 250px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #39ff14;
+}
+
+#statoClassifica {
+    margin: 0 0 15px;
+    font-size: 13px;
+    text-align: center;
+    color: #aaa;
 }
 
 #listaClassifica {
-    text-align: left;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: posizione;
 }
 
 #listaClassifica li {
-    margin: 5px;
+    counter-increment: posizione;
+    margin: 6px 0;
+    padding: 8px 10px;
+    font-size: 15px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+}
+
+#listaClassifica li::before {
+    content: counter(posizione) ". ";
+    font-weight: bold;
+    color: #39ff14;
+}
+
+#listaClassifica li:nth-child(1) {
+    color: gold;
+}
+
+#listaClassifica li:nth-child(2) {
+    color: silver;
+}
+
+#listaClassifica li:nth-child(3) {
+    color: #cd7f32;
+}
+
+.colore0 { filter: hue-rotate(0deg); }
+.colore1 { filter: hue-rotate(70deg); }
+.colore2 { filter: hue-rotate(140deg); }
+.colore3 { filter: hue-rotate(210deg); }
+.colore4 { filter: hue-rotate(280deg); }
+
+#vite {
+    display: flex;
+    gap: 8px;
+}
+
+.cuore {
+    width: 30px;
+    height: 30px;
+    background-image: url("img/cuore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }

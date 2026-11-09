@@ -1,4 +1,3 @@
-
 const area = document.querySelector(".area-gioco");
 const selectDifficolta = document.querySelector("#difficoltà");
 const btnstart = document.querySelector("#start");
@@ -23,8 +22,12 @@ const SCESA_ALIENI = 20;
 
 // Nuove costanti
 const VELOCITA_PROIETTILE_ALIENO = 5;
-const LARGHEZZA_MURETTO = 100;
-const ALTEZZA_MURETTO = 35;
+const LARGHEZZA_MURETTO = 120;
+const ALTEZZA_MURETTO = 40;
+const MARGINE_MURETTO_X = 15;
+const MARGINE_MURETTO_Y = 5;
+const CHIAVE_CLASSIFICA = "classificaSpaceInvaders";
+const COOLDOWN_SPARO = 400;
 
 let LARGHEZZA = 0;
 let ALTEZZA = 0;
@@ -46,6 +49,7 @@ let punteggio = 0;
 let vite = 3;
 let partitaFinita = false;
 let ultimoSparoAlieni = 0;
+let ultimoSparoGiocatore = 0;
 let intervalloSparo = 2000;
 let intervalloMovimento = INTERVALLO_ALIENI;
 let classifica = [];
@@ -89,6 +93,7 @@ function startGame() {
     direzioneAlieni = 1;
     ultimoMovimentoAlieni = 0;
     ultimoSparoAlieni = Date.now();
+    ultimoSparoGiocatore = 0;
 
     ondata = 1;
 
@@ -96,7 +101,7 @@ function startGame() {
     tastoDestra = false;
 
     document.querySelector("#punteggio").textContent = "Punteggio: 0";
-    document.querySelector("#vite").textContent = "Vite: 3";
+    aggiornaVite();
     document.querySelector("#messaggio").textContent = "";
     document.querySelector("#rigioca").classList.add("nascosto");
 
@@ -164,11 +169,15 @@ function premiTasto(evento) {
         return;
     }
 
-    if (evento.key === "a") {
+    if (navicella !== null && (evento.key === "ArrowLeft" || evento.key === "ArrowRight")) {
+        evento.preventDefault();
+    }
+
+    if (evento.key === "a" || evento.key === "ArrowLeft") {
         tastoSinistra = true;
     }
 
-    if (evento.key === "d") {
+    if (evento.key === "d" || evento.key === "ArrowRight") {
         tastoDestra = true;
     }
 
@@ -182,11 +191,11 @@ function premiTasto(evento) {
 }
 
 function rilasciaTasto(evento) {
-    if (evento.key === "a") {
+    if (evento.key === "a" || evento.key === "ArrowLeft") {
         tastoSinistra = false;
     }
 
-    if (evento.key === "d") {
+    if (evento.key === "d" || evento.key === "ArrowRight") {
         tastoDestra = false;
     }
 }
@@ -195,6 +204,14 @@ function rilasciaTasto(evento) {
 // PROIETTILI DEL GIOCATORE
 
 function sparaGiocatore() {
+    const adesso = Date.now();
+
+    if (adesso - ultimoSparoGiocatore < COOLDOWN_SPARO) {
+        return;
+    }
+
+    ultimoSparoGiocatore = adesso;
+
     const elemento = document.createElement("div");
     elemento.classList.add("proiettile");
 
@@ -244,6 +261,7 @@ function creaAlieni() {
 
             const elemento = document.createElement("div");
             elemento.classList.add("alieno");
+            elemento.classList.add("colore" + riga);
 
             const alieno = {
                 x: inizioX + colonna * (LARGHEZZA_ALIENO + SPAZIO_ALIENI),
@@ -346,9 +364,6 @@ function aggiornaProiettiliAlieni() {
     }
 }
 
-
-// MURETTI PROTETTIVI
-
 function creaMuretti() {
     for (let i = 0; i < 4; i++) {
         const elemento = document.createElement("div");
@@ -357,7 +372,7 @@ function creaMuretti() {
         const muretto = {
             x: (LARGHEZZA / 5) * (i + 1) - LARGHEZZA_MURETTO / 2,
             y: ALTEZZA - 160,
-            resistenza: 3,
+            resistenza: 5,
             elemento: elemento
         };
 
@@ -369,22 +384,23 @@ function creaMuretti() {
     }
 }
 
+function collisione(x1, y1, larghezza1, altezza1, x2, y2, larghezza2, altezza2) {
 
-// CONTROLLO COLLISIONI
-
-function collisione(x1, y1, larghezza1, altezza1,
-                    x2, y2, larghezza2, altezza2) {
-
-    if (
-        x1 < x2 + larghezza2 &&
-        x1 + larghezza1 > x2 &&
-        y1 < y2 + altezza2 &&
-        y1 + altezza1 > y2
-    ) {
+    if (x1 < x2 + larghezza2 && x1 + larghezza1 > x2 && y1 < y2 + altezza2 && y1 + altezza1 > y2){
         return true;
     }
 
     return false;
+}
+
+function collisioneMuretto(proiettile, muretto) {
+    return collisione(
+        proiettile.x, proiettile.y,
+        LARGHEZZA_PROIETTILE, ALTEZZA_PROIETTILE,
+        muretto.x + MARGINE_MURETTO_X, muretto.y + MARGINE_MURETTO_Y,
+        LARGHEZZA_MURETTO - MARGINE_MURETTO_X * 2,
+        ALTEZZA_MURETTO - MARGINE_MURETTO_Y * 2
+    );
 }
 
 function controllaCollisioni() {
@@ -420,12 +436,7 @@ function controllaCollisioni() {
             for (let j = muretti.length - 1; j >= 0; j--) {
                 const muretto = muretti[j];
 
-                if (collisione(
-                    proiettile.x, proiettile.y,
-                    LARGHEZZA_PROIETTILE, ALTEZZA_PROIETTILE,
-                    muretto.x, muretto.y,
-                    LARGHEZZA_MURETTO, ALTEZZA_MURETTO
-                )) {
+                if (collisioneMuretto(proiettile, muretto)) {
                     danneggiaMuretto(j);
                     colpito = true;
                     break;
@@ -447,12 +458,7 @@ function controllaCollisioni() {
         for (let j = muretti.length - 1; j >= 0; j--) {
             const muretto = muretti[j];
 
-            if (collisione(
-                proiettile.x, proiettile.y,
-                LARGHEZZA_PROIETTILE, ALTEZZA_PROIETTILE,
-                muretto.x, muretto.y,
-                LARGHEZZA_MURETTO, ALTEZZA_MURETTO
-            )) {
+            if (collisioneMuretto(proiettile, muretto)) {
                 danneggiaMuretto(j);
                 colpito = true;
                 break;
@@ -467,7 +473,7 @@ function controllaCollisioni() {
         )) {
             vite--;
 
-            document.querySelector("#vite").textContent = "Vite: " + vite;
+            aggiornaVite();
 
             colpito = true;
 
@@ -485,17 +491,28 @@ function controllaCollisioni() {
     }
 }
 
+function aggiornaVite() {
+    const contenitore = document.querySelector("#vite");
+    contenitore.innerHTML = "";
+
+    for (let i = 0; i < vite; i++) {
+        const cuore = document.createElement("div");
+        cuore.classList.add("cuore");
+        contenitore.appendChild(cuore);
+    }
+}
+
 function danneggiaMuretto(indice) {
     const muretto = muretti[indice];
 
     muretto.resistenza--;
 
     if (muretto.resistenza === 2) {
-        muretto.elemento.style.backgroundColor = "orange";
+        muretto.elemento.style.opacity = "0.7";
     }
 
     if (muretto.resistenza === 1) {
-        muretto.elemento.style.backgroundColor = "red";
+        muretto.elemento.style.opacity = "0.4";
     }
 
     if (muretto.resistenza <= 0) {
@@ -558,11 +575,9 @@ function finePartita(vittoria) {
     document.querySelector("#rigioca").classList.remove("nascosto");
 
     // Salva il risultato nella classifica della sessione
-    classifica.push({
-        nome: nome,
-        punteggio: punteggio
-    });
+    inserisciRecord(classifica, nome, punteggio);
 
+    salvaPunteggio();
     mostraClassifica();
 }
 
@@ -570,10 +585,63 @@ function rigioca() {
     partita.classList.add("nascosto");
     menu.classList.remove("nascosto");
     navicella = null;
+    document.querySelector("#rigioca").classList.add("nascosto");
 }
 
 
 // CLASSIFICA JSON
+
+function inserisciRecord(lista, nomeGiocatore, punti) {
+    const nomePulito = nomeGiocatore.trim().toLowerCase();
+
+    for (let i = 0; i < lista.length; i++) {
+        if (lista[i].nome.trim().toLowerCase() === nomePulito) {
+            if (punti > lista[i].punteggio) {
+                lista[i].punteggio = punti;
+            }
+            return;
+        }
+    }
+
+    lista.push({
+        nome: nomeGiocatore.trim(),
+        punteggio: punti
+    });
+}
+
+function unisciSalvati() {
+    const salvati = leggiSalvati();
+
+    for (let i = 0; i < salvati.length; i++) {
+        inserisciRecord(classifica, salvati[i].nome, salvati[i].punteggio);
+    }
+}
+
+function leggiSalvati() {
+    try {
+        const testo = localStorage.getItem(CHIAVE_CLASSIFICA);
+
+        if (testo === null) {
+            return [];
+        }
+
+        return JSON.parse(testo);
+    } catch (errore) {
+        return [];
+    }
+}
+
+function salvaPunteggio() {
+    const salvati = leggiSalvati();
+
+    inserisciRecord(salvati, nome, punteggio);
+
+    try {
+        localStorage.setItem(CHIAVE_CLASSIFICA, JSON.stringify(salvati));
+    } catch (errore) {
+        console.log("Impossibile salvare il punteggio");
+    }
+}
 
 async function caricaClassifica() {
     const stato = document.querySelector("#statoClassifica");
@@ -588,6 +656,7 @@ async function caricaClassifica() {
         }
 
         classifica = await risposta.json();
+        unisciSalvati();
 
         stato.textContent = "Classifica caricata!";
         mostraClassifica();
@@ -595,6 +664,7 @@ async function caricaClassifica() {
     } catch (errore) {
         stato.textContent = "Errore nel caricamento della classifica";
         classifica = [];
+        unisciSalvati();
         mostraClassifica();
     }
 }
