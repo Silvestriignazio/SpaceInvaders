@@ -20,10 +20,11 @@ const PASSO_ALIENI = 5;
 const INTERVALLO_ALIENI = 250;
 const SCESA_ALIENI = 20;
 
-// Nuove costanti
+
 const VELOCITA_PROIETTILE_ALIENO = 5;
 const LARGHEZZA_MURETTO = 120;
 const ALTEZZA_MURETTO = 40;
+// Spazio vuoto da ignorare a ogni lato del muretto nelle collisioni (in px)
 const MARGINE_MURETTO_X = 15;
 const MARGINE_MURETTO_Y = 5;
 const CHIAVE_CLASSIFICA = "classificaSpaceInvaders";
@@ -393,6 +394,7 @@ function collisione(x1, y1, larghezza1, altezza1, x2, y2, larghezza2, altezza2) 
     return false;
 }
 
+// Collisione proiettile-muretto con hitbox ridotta (l'immagine ha bordi trasparenti)
 function collisioneMuretto(proiettile, muretto) {
     return collisione(
         proiettile.x, proiettile.y,
@@ -405,7 +407,7 @@ function collisioneMuretto(proiettile, muretto) {
 
 function controllaCollisioni() {
 
-    // Proiettili del giocatore contro alieni
+    //essendo degli array si contano al contrario, se non ci fosse il -1 andremmo a saltare degli elementi
     for (let i = proiettili.length - 1; i >= 0; i--) {
         const proiettile = proiettili[i];
         let colpito = false;
@@ -413,6 +415,7 @@ function controllaCollisioni() {
         for (let j = alieni.length - 1; j >= 0; j--) {
             const alieno = alieni[j];
 
+            //si controllano le collisioni, se collide con qualcosa si toglie dal dom con remove e dall'array con slice
             if (collisione(
                 proiettile.x, proiettile.y,
                 LARGHEZZA_PROIETTILE, ALTEZZA_PROIETTILE,
@@ -423,15 +426,13 @@ function controllaCollisioni() {
                 alieni.splice(j, 1);
 
                 punteggio += 10;
-                document.querySelector("#punteggio").textContent =
-                    "Punteggio: " + punteggio;
+                document.querySelector("#punteggio").textContent = "Punteggio: " + punteggio;
 
                 colpito = true;
                 break;
             }
         }
 
-        // Controlla anche i muretti
         if (!colpito) {
             for (let j = muretti.length - 1; j >= 0; j--) {
                 const muretto = muretti[j];
@@ -450,7 +451,6 @@ function controllaCollisioni() {
         }
     }
 
-    // Proiettili alieni contro muretti e navicella
     for (let i = proiettiliAlieni.length - 1; i >= 0; i--) {
         const proiettile = proiettiliAlieni[i];
         let colpito = false;
@@ -477,7 +477,6 @@ function controllaCollisioni() {
 
             colpito = true;
 
-            // Se finiscono le vite termina la partita
             if (vite <= 0) {
                 finePartita(false);
                 return;
@@ -521,9 +520,6 @@ function danneggiaMuretto(indice) {
     }
 }
 
-
-// PARTITA CON ONDATE INFINITE
-
 function controllaFinePartita() {
 
     if (partitaFinita) {
@@ -545,17 +541,12 @@ function controllaFinePartita() {
 
     // Se gli alieni raggiungono la navicella
     for (let i = 0; i < alieni.length; i++) {
-        if (alieni[i].y + ALTEZZA_ALIENO >=
-            ALTEZZA - ALTEZZA_NAVICELLA - 10) {
-
+        if (alieni[i].y + ALTEZZA_ALIENO >= ALTEZZA - ALTEZZA_NAVICELLA - 10) {
             finePartita(false);
             return;
         }
     }
 }
-
-
-// FINE PARTITA
 
 function mostraGameOver() {
     const schermata = document.createElement("div");
@@ -592,9 +583,6 @@ function rigioca() {
     navicella = null;
     document.querySelector("#rigioca").classList.add("nascosto");
 }
-
-
-// CLASSIFICA JSON
 
 function inserisciRecord(lista, nomeGiocatore, punti) {
     const nomePulito = nomeGiocatore.trim().toLowerCase();
@@ -648,12 +636,14 @@ function salvaPunteggio() {
     }
 }
 
+//async dichiara che questa funzione è asincrona e gli serve del tempo per recuperare e leggere dati
 async function caricaClassifica() {
     const stato = document.querySelector("#statoClassifica");
 
     stato.textContent = "Caricamento classifica in corso...";
 
     try {
+        //Serve a dire a JavaScript: aspetta che questa operazione sia terminata prima di passare all'istruzione successiva della funzione.
         const risposta = await fetch("classifica.json");
 
         if (!risposta.ok) {
@@ -687,16 +677,10 @@ function mostraClassifica() {
     for (let i = 0; i < classifica.length && i < 10; i++) {
         const elemento = document.createElement("li");
 
-        elemento.textContent =
-            classifica[i].nome + " - " +
-            classifica[i].punteggio + " punti";
-
+        elemento.textContent = classifica[i].nome + " - " + classifica[i].punteggio + " punti";
         lista.appendChild(elemento);
     }
 }
-
-
-// GAME LOOP
 
 function gameLoop() {
     if (partitaFinita) {
@@ -719,7 +703,7 @@ function gameLoop() {
 }
 
 
-// EVENT LISTENER
+
 
 selectDifficolta.addEventListener("change", cambiaDifficolta);
 inserisciNome.addEventListener("input", cambiaNome);
@@ -730,5 +714,5 @@ document.addEventListener("keyup", rilasciaTasto);
 
 document.querySelector("#rigioca").addEventListener("click", rigioca);
 
-// Carica la classifica all'apertura della pagina
-caricaClassifica();
+
+caricaClassifica(); 
