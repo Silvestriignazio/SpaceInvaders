@@ -148,8 +148,8 @@ button:hover {
 .navicella {
     position: absolute;
     bottom: 10px;
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     background-image: url("img/navicella.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -289,6 +289,20 @@ button:hover {
     width: 30px;
     height: 30px;
     background-image: url("img/cuore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.gameover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.6);
+    background-image: url("img/gameover.gif");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;

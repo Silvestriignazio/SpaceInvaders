@@ -557,6 +557,12 @@ function controllaFinePartita() {
 
 // FINE PARTITA
 
+function mostraGameOver() {
+    const schermata = document.createElement("div");
+    schermata.classList.add("gameover");
+    area.appendChild(schermata);
+}
+
 function finePartita(vittoria) {
     if (partitaFinita) {
         return;
@@ -568,8 +574,7 @@ function finePartita(vittoria) {
         document.querySelector("#messaggio").textContent =
             "HAI VINTO! Punteggio: " + punteggio;
     } else {
-        document.querySelector("#messaggio").textContent =
-            "GAME OVER! Punteggio: " + punteggio;
+        mostraGameOver();
     }
 
     document.querySelector("#rigioca").classList.remove("nascosto");
